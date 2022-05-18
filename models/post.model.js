@@ -16,6 +16,11 @@ const PostSchema = new mongoose.Schema(
       trim: true,
       maxlength: 50,
     },
+    categorie: {
+      type: String,
+      trim: true,
+      maxlength: 50,
+    },
     ville: {
       type: String,
       trim: true,

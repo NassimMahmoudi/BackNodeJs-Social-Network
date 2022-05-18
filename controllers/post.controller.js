@@ -1,4 +1,3 @@
-const postModel = require("../models/post.model.js");
 const PostModel = require("../models/post.model.js");
 const UserModel = require("../models/user.model.js");
 const { uploadErrors } = require("../utils/errors.utils.js");
@@ -8,29 +7,41 @@ const { promisify } = require("util");
 const pipeline = promisify(require("stream").pipeline);
 
 // Search Post
-module.exports.SearchPost = (req, res) => {
+module.exports.SearchPost = async (req, res) => {
   let delegation = req.params.delegation;
   let ville = req.params.ville;
   let titre = req.params.titre;
-  let search_result = {}
-  PostModel.find({$or:[{delegation: delegation},{ville:ville}]}, function(err, results) 
-  {
-     if (err)
-     {
-         res.send(err);
-     }
-     console.log(results);
-     results.forEach(element => {
-        let titre_post=element.titre;
-        let position = titre_post.indexOf(titre);
-       if(position>1){
-          search_result.push(element);
-       }
-     });
-
-     res.status(200).send(search_result);
- 
+  let categorie = req.params.categorie;
+  let result=[];
+  let search_result;
+  console.log(req.params)
+  if((categorie=="all")&&(ville=="all")&&(delegation=="all")){ 
+    search_result = await PostModel.find().sort({createdAt : -1});
+  }else if((categorie=="all")&&(delegation!="all")&&(ville!="all")){
+    search_result = await PostModel.find({ $and:[{ delegation , ville }]}).sort({createdAt : -1});
+  }else if((ville=="all")&&(delegation!="all")&&(categorie!="all")){
+    search_result = await PostModel.find({$and:[{categorie, delegation}]}).sort({createdAt : -1});
+  }else if((delegation=="all")&&(ville!="all")&&(categorie!="all")){
+    search_result = await PostModel.find({$and:[{ categorie ,ville}]}).sort({createdAt : -1});
+  }else if((delegation!="all")&&(ville=="all")&&(categorie=="all")){
+    search_result = await PostModel.find({ delegation : delegation }).sort({createdAt : -1});
+  }else if((ville!="all")&&(delegation=="all")&&(categorie=="all")){
+    search_result = await PostModel.find({ ville : ville }).sort({createdAt : -1});
+  }else if((categorie!="all")&&(delegation=="all")&&(ville=="all")){
+    search_result = await PostModel.find({ categorie : categorie }).sort({createdAt : -1});
+  }else{
+    search_result = await PostModel.find({$and:[{ categorie , delegation , ville}]}).sort({createdAt : -1});
+  }
+  
+  search_result.forEach(element => {
+    let titre_post=element.titre;
+    let position = titre_post.indexOf(titre);
+    if(position>-1){
+      result.push(element);
+    }
   });
+
+  res.status(200).send(result);
 };
 module.exports.readPost = (req, res) => {
   PostModel.find((err, docs) => {
@@ -44,12 +55,13 @@ module.exports.createPost = async (req, res) => {
   req.files.forEach(element => {
         pictures.push(element.path)
   }); 
-  const newPost = new postModel({
+  const newPost = new PostModel({
     posterId: req.body.posterId,
     message: req.body.message,
     titre: req.body.titre,
     ville: req.body.ville,
     delegation: req.body.delegation,
+    categorie: req.body.categorie,
     picture: pictures,
     video: req.body.video,
     likers: [],

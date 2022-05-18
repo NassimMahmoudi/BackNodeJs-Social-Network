@@ -3,7 +3,7 @@ const postController = require('../controllers/post.controller.js');
 const upload = require("../middleware/upload.middleware");
 const router = express.Router();
 
-router.get('/search', postController.SearchPost);
+router.get('/search/:titre/:categorie/:ville/:delegation', postController.SearchPost);
 router.get('/', postController.readPost);
 router.post('/', upload, postController.createPost);
 router.put('/:id', postController.updatePost);
