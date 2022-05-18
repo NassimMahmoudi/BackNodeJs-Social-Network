@@ -1,12 +1,37 @@
-const postModel = require("../models/post.model");
-const PostModel = require("../models/post.model");
-const UserModel = require("../models/user.model");
-const { uploadErrors } = require("../utils/errors.utils");
+const postModel = require("../models/post.model.js");
+const PostModel = require("../models/post.model.js");
+const UserModel = require("../models/user.model.js");
+const { uploadErrors } = require("../utils/errors.utils.js");
 const ObjectID = require("mongoose").Types.ObjectId;
 const fs = require("fs");
 const { promisify } = require("util");
 const pipeline = promisify(require("stream").pipeline);
 
+// Search Post
+module.exports.SearchPost = (req, res) => {
+  let delegation = req.params.delegation;
+  let ville = req.params.ville;
+  let titre = req.params.titre;
+  let search_result = {}
+  PostModel.find({$or:[{delegation: delegation},{ville:ville}]}, function(err, results) 
+  {
+     if (err)
+     {
+         res.send(err);
+     }
+     console.log(results);
+     results.forEach(element => {
+        let titre_post=element.titre;
+        let position = titre_post.indexOf(titre);
+       if(position>1){
+          search_result.push(element);
+       }
+     });
+
+     res.status(200).send(search_result);
+ 
+  });
+};
 module.exports.readPost = (req, res) => {
   PostModel.find((err, docs) => {
     if (!err) res.send(docs);
@@ -16,7 +41,7 @@ module.exports.readPost = (req, res) => {
 
 module.exports.createPost = async (req, res) => {
   let fileName;
-
+  console.log("test")
   if (req.file !== null) {
     try {
       if (
@@ -44,6 +69,9 @@ module.exports.createPost = async (req, res) => {
   const newPost = new postModel({
     posterId: req.body.posterId,
     message: req.body.message,
+    titre: req.body.titre,
+    ville: req.body.ville,
+    delegation: req.body.delegation,
     picture: req.file !== null ? "./uploads/posts/" + fileName : "",
     video: req.body.video,
     likers: [],
@@ -64,6 +92,9 @@ module.exports.updatePost = (req, res) => {
 
   const updatedRecord = {
     message: req.body.message,
+    ville: req.body.ville,
+    titre: req.body.titre,
+    delegation: req.body.delegation,
   };
 
   PostModel.findByIdAndUpdate(

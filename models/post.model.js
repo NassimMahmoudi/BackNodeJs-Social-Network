@@ -11,6 +11,21 @@ const PostSchema = new mongoose.Schema(
       trim: true,
       maxlength: 500,
     },
+    titre: {
+      type: String,
+      trim: true,
+      maxlength: 50,
+    },
+    ville: {
+      type: String,
+      trim: true,
+      maxlength: 50,
+    },
+    delegation: {
+      type: String,
+      trim: true,
+      maxlength: 50,
+    },
     picture: {
       type: String,
     },

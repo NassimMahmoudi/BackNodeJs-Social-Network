@@ -1,9 +1,10 @@
-const router = require("express").Router();
-const authController = require("../controllers/auth.controller");
-const userController = require("../controllers/user.controller");
-const uploadController = require('../controllers/upload.controller');
+const express = require("express");
+const authController = require("../controllers/auth.controller.js");
+const userController = require("../controllers/user.controller.js");
+const uploadController = require('../controllers/upload.controller.js');
 const multer = require("multer");
 const upload = multer();
+const router = express.Router();
 
 // auth
 router.post("/register", authController.signUp);
