@@ -1,12 +1,11 @@
 const express = require('express');
 const postController = require('../controllers/post.controller.js');
-const multer = require("multer");
-const upload = multer();
+const upload = require("../middleware/upload.middleware");
 const router = express.Router();
 
 router.get('/search', postController.SearchPost);
 router.get('/', postController.readPost);
-router.post('/', upload.single("file"), postController.createPost);
+router.post('/', upload, postController.createPost);
 router.put('/:id', postController.updatePost);
 router.delete('/:id', postController.deletePost);
 router.patch('/like-post/:id', postController.likePost);

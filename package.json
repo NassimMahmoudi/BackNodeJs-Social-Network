@@ -22,7 +22,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.6.0",
     "mongoose": "^5.13.5",
-    "multer": "^2.0.0-rc.1",
+    "multer": "^1.4.4",
     "nodemon": "^2.0.6",
     "react-router-dom": "^6.2.2",
     "reactjs-popup": "^2.0.4",

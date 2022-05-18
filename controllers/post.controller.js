@@ -40,39 +40,17 @@ module.exports.readPost = (req, res) => {
 };
 
 module.exports.createPost = async (req, res) => {
-  let fileName;
-  console.log("test")
-  if (req.file !== null) {
-    try {
-      if (
-        req.file.detectedMimeType != "image/jpg" &&
-        req.file.detectedMimeType != "image/png" &&
-        req.file.detectedMimeType != "image/jpeg"
-      )
-        throw Error("invalid file");
-
-      if (req.file.size > 500000) throw Error("max size");
-    } catch (err) {
-      const errors = uploadErrors(err);
-      return res.status(201).json({ errors });
-    }
-    fileName = req.body.posterId + Date.now() + ".jpg";
-
-    await pipeline(
-      req.file.stream,
-      fs.createWriteStream(
-        `${__dirname}/../client/public/uploads/posts/${fileName}`
-      )
-    );
-  }
-
+  let pictures= [];
+  req.files.forEach(element => {
+        pictures.push(element.path)
+  }); 
   const newPost = new postModel({
     posterId: req.body.posterId,
     message: req.body.message,
     titre: req.body.titre,
     ville: req.body.ville,
     delegation: req.body.delegation,
-    picture: req.file !== null ? "./uploads/posts/" + fileName : "",
+    picture: pictures,
     video: req.body.video,
     likers: [],
     comments: [],

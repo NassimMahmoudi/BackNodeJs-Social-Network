@@ -27,14 +27,16 @@ const PostSchema = new mongoose.Schema(
       maxlength: 50,
     },
     picture: {
-      type: String,
-    },
+      type: [String],
+      required: true,}, 
+    is_accepted: {
+      type: Boolean,
+      required: false,},
     video: {
       type: String,
     },
     likers: {
-      type: [String],
-      required: true,
+      
     },
     comments: {
       type: [
