@@ -28,7 +28,6 @@ const adminSchema = new mongoose.Schema(
     },
     picture: {
       type: String,
-      default: "./uploads/profil/random-user.png"
     }
   },
   {
@@ -37,7 +36,7 @@ const adminSchema = new mongoose.Schema(
 );
 
 // play function before save into display: 'block',
-userSchema.pre("save", async function(next) {
+adminSchema.pre("save", async function(next) {
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   next();

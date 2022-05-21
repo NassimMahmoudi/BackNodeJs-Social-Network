@@ -44,7 +44,7 @@ module.exports.SearchPost = async (req, res) => {
   res.status(200).send(result);
 };
 module.exports.readPost = (req, res) => {
-  PostModel.find((err, docs) => {
+  PostModel.findOne(req.params.id,(err, docs) => {
     if (!err) res.send(docs);
     else console.log("Error to get data : " + err);
   }).sort({ createdAt: -1 });

@@ -2,10 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const userRoutes = require('./routes/user.routes');
+const adminRoutes = require('./routes/admin.routes');
 const postRoutes = require('./routes/post.routes');
 require('dotenv').config({path: './config/.env'});
 require('./config/db');
-const {checkUser, requireAuth} = require('./middleware/auth.middleware');
+const {checkUser, checkAdmin, requireAuth} = require('./middleware/auth.middleware');
 const cors = require('cors');
 
 const app = express();
@@ -19,6 +20,9 @@ const corsOptions = {
   'preflightContinue': false
 }
 app.use(cors(corsOptions));
+// serve all static files inside public directory display images
+app.use(express.static('public')); 
+app.use('/client/public/uploads/posts/videos/', express.static("client/public/uploads/posts/videos/"));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -31,8 +35,9 @@ app.get('/jwtid', requireAuth, (req, res) => {
 });
 
 // routes
-app.use('/api/user', userRoutes);
-app.use('/api/post', postRoutes);
+app.use('/api/user',userRoutes);
+app.use('/api/admin', checkAdmin, adminRoutes);
+app.use('/api/post',requireAuth, postRoutes);
 
 // server
 app.listen(3000, () => {
