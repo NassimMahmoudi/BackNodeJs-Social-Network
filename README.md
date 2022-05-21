@@ -1,3 +1,3 @@
 # 🚀 Javascript full-stack 🚀
-## MERN Stack
+## NodeJs API
 ### NodeJs / Express / MongoDB /
