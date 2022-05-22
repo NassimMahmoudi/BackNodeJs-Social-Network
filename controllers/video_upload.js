@@ -2,7 +2,7 @@ var Busboy = require("busboy");
 var path = require("path");
 var fs = require("fs");
 var sha1 = require("sha1");
-const PostModel = require("../models/post.model.js");
+
 
 // Gets a filename extension.
 function getExtension(filename) {
@@ -23,7 +23,7 @@ allowedMimeTypes.indexOf(mimetype) != -1;
 
 function upload (req, callback) {
 // The route on which the file is saved.
-var fileRoute = "/client/public/uploads/posts/videos/";
+var fileRoute = "/uploads/posts/videos/";
 
 // Server side file path on which the file is saved.
 var saveToPath = null;
@@ -94,26 +94,13 @@ var status = isFileValid(saveToPath, mimetype);
 if (!status) {
 return handleStreamError("File does not meet the validation.");
 }
-const updatedRecord = {
-    video: link,
-  };
 
-  PostModel.findByIdAndUpdate(
-    req.body.id_post,
-    { $set: updatedRecord },
-    { new: true },
-    (err, docs) => {
-      if (err) 
-        res.status(200).send("Update error : " + err);
-    }
-  );
 return callback(null, {link: link});
 
 });
 
 // Save file to disk.
 file.pipe(diskWriterStream);
-console.log(link)
 
 
   

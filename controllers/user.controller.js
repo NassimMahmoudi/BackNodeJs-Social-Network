@@ -5,6 +5,19 @@ module.exports.getAllUsers = async (req, res) => {
   const users = await UserModel.find().select("-password");
   res.status(200).json(users);
 };
+module.exports.SearchUsers = async (req, res) => {
+  let name_serached = req.params.name;
+  let resultSearch=[];
+  const users = await UserModel.find().select("-password");
+  users.forEach(element => {
+    let name=element.pseudo;
+    let position = name.indexOf(name_serached);
+    if(position>-1){
+      resultSearch.push(element);
+    }
+  });
+  res.status(200).json(resultSearch);
+};
 
 module.exports.userInfo = (req, res) => {
   if (!ObjectID.isValid(req.params.id))
@@ -102,4 +115,23 @@ module.exports.unfollow = async (req, res) => {
     return res.status(500).json({ message: err });
   }
 }
+module.exports.acceptUser = (req, res) => {
+  if (!ObjectID.isValid(req.params.id))
+    return res.status(400).send("ID unknown : " + req.params.id);
+
+  const updatedRecord = {
+    is_verified : true,
+  };
+
+  UserModel.findByIdAndUpdate(
+    req.params.id,
+    { $set: updatedRecord },
+    { new: true },
+    (err, docs) => {
+      if (!err) res.send(docs);
+      else console.log("Update error : " + err);
+    }
+  );
+};
+
 

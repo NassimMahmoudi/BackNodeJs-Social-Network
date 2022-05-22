@@ -22,7 +22,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 // serve all static files inside public directory display images
 app.use(express.static('public')); 
-app.use('/client/public/uploads/posts/videos/', express.static("client/public/uploads/posts/videos/"));
+app.use('/uploads/posts/videos/', express.static("/uploads/posts/videos/"));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -37,7 +37,7 @@ app.get('/jwtid', requireAuth, (req, res) => {
 // routes
 app.use('/api/user',userRoutes);
 app.use('/api/admin', checkAdmin, adminRoutes);
-app.use('/api/post',requireAuth, postRoutes);
+app.use('/api/post',postRoutes);
 
 // server
 app.listen(3000, () => {

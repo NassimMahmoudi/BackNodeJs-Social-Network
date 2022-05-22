@@ -20,6 +20,9 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    is_verified: {
+      type: Boolean,
+      default: false,},
     password: {
       type: String,
       required: true,
@@ -41,7 +44,8 @@ const userSchema = new mongoose.Schema(
     },
     likes: {
       type: [String]
-    }
+    },
+    
   },
   {
     timestamps: true,

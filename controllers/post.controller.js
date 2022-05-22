@@ -5,7 +5,7 @@ const ObjectID = require("mongoose").Types.ObjectId;
 const fs = require("fs");
 const { promisify } = require("util");
 const pipeline = promisify(require("stream").pipeline);
-
+var upload_video = require("./video_upload");
 // Search Post
 module.exports.SearchPost = async (req, res) => {
   let delegation = req.params.delegation;
@@ -47,6 +47,24 @@ module.exports.readPost = (req, res) => {
   PostModel.findOne(req.params.id,(err, docs) => {
     if (!err) res.send(docs);
     else console.log("Error to get data : " + err);
+  });
+};
+module.exports.myPosts = (req, res) => {
+  PostModel.find({posterId : req.params.id},(err, docs) => {
+    if (!err) res.send(docs);
+    else console.log("Error to get data : " + err);
+  }).sort({ createdAt: -1 });
+};
+module.exports.readAllPosts = (req, res) => {
+  PostModel.find((err, docs) => {
+    if (!err) res.send(docs);
+    else console.log("Error to get data : " + err);
+  }).sort({ createdAt: -1 });
+};
+module.exports.readAcceptedPosts = (req, res) => {
+  PostModel.find({is_accepted : true},(err, docs) => {
+    if (!err) res.send(docs);
+    else console.log("Error to get data : " + err);
   }).sort({ createdAt: -1 });
 };
 
@@ -85,6 +103,24 @@ module.exports.updatePost = (req, res) => {
     ville: req.body.ville,
     titre: req.body.titre,
     delegation: req.body.delegation,
+  };
+
+  PostModel.findByIdAndUpdate(
+    req.params.id,
+    { $set: updatedRecord },
+    { new: true },
+    (err, docs) => {
+      if (!err) res.send(docs);
+      else console.log("Update error : " + err);
+    }
+  );
+};
+module.exports.acceptPost = (req, res) => {
+  if (!ObjectID.isValid(req.params.id))
+    return res.status(400).send("ID unknown : " + req.params.id);
+
+  const updatedRecord = {
+    is_accepted : true,
   };
 
   PostModel.findByIdAndUpdate(
@@ -230,4 +266,18 @@ module.exports.deleteCommentPost = (req, res) => {
     } catch (err) {
         return res.status(400).send(err);
     }
+};
+module.exports.UploadVideo = (req, res) => {
+  let post = req.body.post;
+  console.log(req.body.post)
+  upload_video(req, async function(err, data) {
+    console.log(req.body.post)
+  if (err) {
+  return res.status(404).send(JSON.stringify(err));
+  }
+  await PostModel.findOneAndUpdate({_id : post}, {video : data.link});
+  console.log(data)
+  res.send(data.link);
+  });
+
 };
