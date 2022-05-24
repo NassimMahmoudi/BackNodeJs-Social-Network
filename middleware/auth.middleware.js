@@ -3,7 +3,7 @@ const UserModel = require("../models/user.model.js");
 const AdminModel = require("../models/admin.model.js");
 
 module.exports.checkUser = (req, res, next) => {
-  const token = req.cookies.jwt;
+  let token = req.headers['x-access-token'];
   if (token) {
     jwt.verify(token, process.env.TOKEN_SECRET, async (err, decodedToken) => {
       if (err) {
@@ -22,7 +22,7 @@ module.exports.checkUser = (req, res, next) => {
   }
 };
 module.exports.checkAdmin = (req, res, next) => {
-  const token = req.cookies.jwt;
+  let token = req.headers['x-access-token'];
   if (token) {
     jwt.verify(token, process.env.TOKEN_SECRET, async (err, decodedToken) => {
       if (err) {
@@ -42,11 +42,10 @@ module.exports.checkAdmin = (req, res, next) => {
 };
 
 module.exports.requireAuth = (req, res, next) => {
-  const token = req.cookies.jwt;
+  let token = req.headers['x-access-token'];
   if (token) {
     jwt.verify(token, process.env.TOKEN_SECRET, async (err, decodedToken) => {
       if (err) {
-        console.log(err);
         res.status(200).json('no token')
       } else {
         console.log(decodedToken.id);

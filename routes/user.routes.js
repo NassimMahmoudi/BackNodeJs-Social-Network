@@ -5,10 +5,12 @@ const userController = require("../controllers/user.controller.js");
 const uploadController = require('../controllers/upload.controller.js');
 const {checkUser, checkAdmin, requireAuth} = require('../middleware/auth.middleware');
 const router = express.Router();
+const upload = require("../middleware/uploadProfile.middleware");
+
 
 
 // auth
-router.post("/register", authController.signUp);
+router.post("/register", upload, authController.signUp);
 router.post("/login", authController.signIn);
 router.get("/logout", requireAuth,authController.logout);
 
@@ -24,7 +26,7 @@ router.patch("/follow/:id",requireAuth, userController.follow);
 router.patch("/unfollow/:id",requireAuth, userController.unfollow);
 
 // upload
-router.post("/upload",requireAuth, uploadController.uploadProfil);
+router.patch("/upload/:id", upload, userController.uploadProfil);
 
 
 module.exports = router;

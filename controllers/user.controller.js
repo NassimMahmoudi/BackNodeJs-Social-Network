@@ -1,5 +1,6 @@
 const UserModel = require("../models/user.model.js");
 const ObjectID = require("mongoose").Types.ObjectId;
+var fs =require('fs');
 
 module.exports.getAllUsers = async (req, res) => {
   const users = await UserModel.find().select("-password");
@@ -38,6 +39,9 @@ module.exports.updateUser = async (req, res) => {
       { _id: req.params.id },
       {
         $set: {
+          pseudo: req.body.pseudo,
+          email: req.body.email,
+          password: req.body.password,
           bio: req.body.bio,
         },
       },
@@ -121,6 +125,33 @@ module.exports.acceptUser = (req, res) => {
 
   const updatedRecord = {
     is_verified : true,
+  };
+
+  UserModel.findByIdAndUpdate(
+    req.params.id,
+    { $set: updatedRecord },
+    { new: true },
+    (err, docs) => {
+      if (!err) res.send(docs);
+      else console.log("Update error : " + err);
+    }
+  );
+};
+
+
+module.exports.uploadProfil = (req, res) => {
+  if (!ObjectID.isValid(req.params.id))
+    return res.status(400).send("ID unknown : " + req.params.id);
+  let new_image=req.file.filename;
+  try{
+      // Delete old Image from server
+      // IN the front side you should pass the new image and the old image too
+      fs.unlinkSync("../uploads/"+ req.body.old_image);//old_image in the front side must be a string from client.image 
+  }catch(err){
+      console.log(err);
+  }
+  const updatedRecord = {
+    picture : new_image,
   };
 
   UserModel.findByIdAndUpdate(

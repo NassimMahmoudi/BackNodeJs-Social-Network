@@ -26,7 +26,7 @@ module.exports.signInErrors = (err) => {
   
   if (err.message.includes('password'))
     errors.password = "Le mot de passe ne correspond pas"
-
+  console.log(err.message)
   return errors;
 }
 

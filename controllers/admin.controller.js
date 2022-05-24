@@ -1,15 +1,16 @@
 const AdminModel = require('../models/admin.model.js');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const { signUpErrors, signInErrors } = require('../utils/errors.utils.js');
+const maxAge = 3 * 24 * 60 * 60 * 1000;
 
 module.exports.signIn = async (req, res) => {
     const { email, password } = req.body
   
     try {
       const admin = await AdminModel.login(email, password);
-      const token = createToken(admin._id);
-      res.cookie('jwt', token, { httpOnly: true, maxAge});
-      res.status(200).json({ admin: admin._id})
+      let token = jwt.sign({id: admin._id, nom: admin.pseudo, role: admin.role}, process.env.TOKEN_SECRET,{expiresIn:'3h'});
+      res.header('x-access-token',token).json({ message : 'Login Success !!!'});
     } catch (err){
      const errors = signInErrors(err);
       res.status(200).json({ errors });
@@ -27,13 +28,12 @@ module.exports.signIn = async (req, res) => {
       res.status(200).send({ errors })
     }
   }
-const createToken = (id) => {
-return jwt.sign({id}, process.env.TOKEN_SECRET, {
-    expiresIn: maxAge
-})
-};    
+ 
 
-module.exports.logout = (req, res) => {
-    res.cookie('jwt', '', { maxAge: 1 });
-    res.redirect('/');
+module.exports.logout = async (req, res) => {
+  let token = req.headers['x-access-token'];
+  let randomNumberToAppend = toString(Math.floor((Math.random() * 1000) + 1));
+  let hashedRandomNumberToAppend = await bcrypt.hash(randomNumberToAppend, 10);
+  token = hashedRandomNumberToAppend;  
+  res.header('x-access-token',token).json({ message : 'Logout Success !!!'});
 }

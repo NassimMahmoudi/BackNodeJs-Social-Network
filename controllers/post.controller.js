@@ -152,14 +152,14 @@ module.exports.likePost = async (req, res) => {
     await PostModel.findByIdAndUpdate(
       req.params.id,
       {
-        $addToSet: { likers: req.body.id },
+        $addToSet: { likers: req.body.id_liker },
       },
       { new: true })
-      .then((data) => res.send(data))
+      .then((data) => console.log(data))
       .catch((err) => res.status(500).send({ message: err }));
 
     await UserModel.findByIdAndUpdate(
-      req.body.id,
+      req.body.id_liker,
       {
         $addToSet: { likes: req.params.id },
       },
@@ -179,14 +179,14 @@ module.exports.unlikePost = async (req, res) => {
     await PostModel.findByIdAndUpdate(
       req.params.id,
       {
-        $pull: { likers: req.body.id },
+        $pull: { likers: req.body.id_liker },
       },
       { new: true })
-            .then((data) => res.send(data))
+            .then((data) => console.log(data))
             .catch((err) => res.status(500).send({ message: err }));
 
     await UserModel.findByIdAndUpdate(
-      req.body.id,
+      req.body.id_liker,
       {
         $pull: { likes: req.params.id },
       },

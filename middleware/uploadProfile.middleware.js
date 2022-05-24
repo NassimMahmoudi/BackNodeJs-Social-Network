@@ -1,7 +1,7 @@
 var multer = require("multer")
 var storage = multer.diskStorage({
   destination: function(req,file,cb){
-    cb(null,"./uploads/posts");
+    cb(null,"./uploads/profils");
   },
   filename :function(req, file, cb){
     cb(null,file.fieldname+ "_" + Date.now() + "_" + file.originalname);
@@ -21,6 +21,6 @@ var upload = multer({
             return cb(err);
         }
     },
-    }).array("files",12);
+    }).single("file");
 
 module.exports = upload;
