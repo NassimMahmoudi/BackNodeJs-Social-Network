@@ -1,13 +1,11 @@
 const express = require('express');
 const postController = require('../controllers/post.controller.js');
 const upload = require("../middleware/upload.middleware");
-
-
 const router = express.Router();
 
 router.get('/search/:titre/:categorie/:ville/:delegation', postController.SearchPost);
-router.get('/', postController.readPost);
-router.get('/posts', postController.readAllPosts);
+router.get('/get-post/:id', postController.readPost);
+router.get('/', postController.readAllPosts);
 router.get('/accepted-posts', postController.readAcceptedPosts);
 router.get('/my-posts/:id', postController.myPosts);
 router.post('/', upload, postController.createPost);
@@ -22,6 +20,6 @@ router.patch('/comment-post/:id', postController.commentPost);
 router.patch('/edit-comment-post/:id', postController.editCommentPost);
 router.patch('/delete-comment-post/:id', postController.deleteCommentPost);
 // Video POST handler.
-router.post('/video-upload', postController.UploadVideo);
+router.patch('/video-upload/:id', postController.UploadVideo);
 
 module.exports = router;

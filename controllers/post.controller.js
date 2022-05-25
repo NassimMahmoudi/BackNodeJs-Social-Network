@@ -44,28 +44,28 @@ module.exports.SearchPost = async (req, res) => {
   res.status(200).send(result);
 };
 module.exports.readPost = (req, res) => {
-  PostModel.findOne(req.params.id,(err, docs) => {
+  if (!ObjectID.isValid(req.params.id))
+    return res.status(400).send("ID unknown : " + req.params.id);
+  PostModel.findOne({_id :req.params.id},(err, docs) => {
     if (!err) res.send(docs);
     else console.log("Error to get data : " + err);
   });
 };
 module.exports.myPosts = (req, res) => {
+  if (!ObjectID.isValid(req.params.id))
+    return res.status(400).send("ID unknown : " + req.params.id);
   PostModel.find({posterId : req.params.id},(err, docs) => {
     if (!err) res.send(docs);
     else console.log("Error to get data : " + err);
   }).sort({ createdAt: -1 });
 };
-module.exports.readAllPosts = (req, res) => {
-  PostModel.find((err, docs) => {
-    if (!err) res.send(docs);
-    else console.log("Error to get data : " + err);
-  }).sort({ createdAt: -1 });
+module.exports.readAllPosts = async (req, res) => {
+  const posts = await PostModel.find().sort({ createdAt: -1 });
+  res.status(200).json(posts);
 };
-module.exports.readAcceptedPosts = (req, res) => {
-  PostModel.find({is_accepted : true},(err, docs) => {
-    if (!err) res.send(docs);
-    else console.log("Error to get data : " + err);
-  }).sort({ createdAt: -1 });
+module.exports.readAcceptedPosts = async (req, res) => {
+  const posts = await PostModel.find({is_accepted : true }).sort({ createdAt: -1 });
+  res.status(200).json(posts);
 };
 
 module.exports.createPost = async (req, res) => {
@@ -268,14 +268,15 @@ module.exports.deleteCommentPost = (req, res) => {
     }
 };
 module.exports.UploadVideo = (req, res) => {
-  let post = req.body.post;
-  console.log(req.body.post)
+  if (!ObjectID.isValid(req.params.id))
+    return res.status(400).send("ID unknown : " + req.params.id);
+  console.log(req.params.id)
   upload_video(req, async function(err, data) {
-    console.log(req.body.post)
+    console.log(req.params.id)
   if (err) {
   return res.status(404).send(JSON.stringify(err));
   }
-  await PostModel.findOneAndUpdate({_id : post}, {video : data.link});
+  await PostModel.findOneAndUpdate({_id : req.params.id}, {video : data.link});
   console.log(data)
   res.send(data.link);
   });

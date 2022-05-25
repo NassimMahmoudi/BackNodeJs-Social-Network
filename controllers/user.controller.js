@@ -76,18 +76,22 @@ module.exports.follow = async (req, res) => {
     // add to the follower list
     await UserModel.findByIdAndUpdate(
       req.params.id,
-      { $addToSet: { following: req.body.idToFollow } },
-      { new: true, upsert: true }
-        .then((data) => res.send(data))
-        .catch((err) => res.status(500).send({ message: err }))),
+      { 
+        $addToSet: { following: req.body.idToFollow },
+      },
+      { new: true })
+            .then((data) => console.log(data))
+            .catch((err) => res.status(500).send({ message: err }));
 
       // add to following list
       await UserModel.findByIdAndUpdate(
         req.body.idToFollow,
-        { $addToSet: { followers: req.params.id } },
-        { new: true, upsert: true }
+        { 
+          $addToSet: { followers: req.params.id },
+         },
+        { new: true })
           .then((data) => res.send(data))
-          .catch((err) => res.status(500).send({ message: err })))
+          .catch((err) => res.status(500).send({ message: err }));
   } catch (err) {
     return res.status(500).json({ message: err });
   }
@@ -101,20 +105,24 @@ module.exports.unfollow = async (req, res) => {
     return res.status(400).send("ID unknown : " + req.params.id);
 
   try {
-    await userModel.findByIdAndUpdate(
+    await UserModel.findByIdAndUpdate(
       req.params.id,
-      { $pull: { following: req.body.idToUnfollow } },
-      { new: true, upsert: true }
-        .then((data) => res.send(data))
-        .catch((err) => res.status(500).send({ message: err }))),
+      { 
+        $pull: { following: req.body.idToUnfollow },
+      },
+      { new: true })
+        .then((data) => console.log(data))
+        .catch((err) => res.status(500).send({ message: err }));
 
       // Retirer de la liste des followers
-      await userModel.findByIdAndUpdate(
+      await UserModel.findByIdAndUpdate(
         req.body.idToUnfollow,
-        { $pull: { followers: req.params.id } },
-        { new: true, upsert: true }
+        { 
+          $pull: { followers: req.params.id },
+         },
+        { new: true})
           .then((data) => res.send(data))
-          .catch((err) => res.status(500).send({ message: err })))
+          .catch((err) => res.status(500).send({ message: err }));
   } catch (err) {
     return res.status(500).json({ message: err });
   }
@@ -140,13 +148,15 @@ module.exports.acceptUser = (req, res) => {
 
 
 module.exports.uploadProfil = (req, res) => {
+  let new_image;
   if (!ObjectID.isValid(req.params.id))
     return res.status(400).send("ID unknown : " + req.params.id);
-  let new_image=req.file.filename;
+  if(req.file){ 
+    new_image=req.file.filename;
   try{
       // Delete old Image from server
       // IN the front side you should pass the new image and the old image too
-      fs.unlinkSync("../uploads/"+ req.body.old_image);//old_image in the front side must be a string from client.image 
+      fs.unlinkSync("./uploads/profils/"+ req.body.old_image);//old_image in the front side must be a string from client.image 
   }catch(err){
       console.log(err);
   }
@@ -162,7 +172,9 @@ module.exports.uploadProfil = (req, res) => {
       if (!err) res.send(docs);
       else console.log("Update error : " + err);
     }
-  );
+  );}else{
+    res.status(200).json({ message : 'You must select a new Image' });
+  }
 };
 
 
