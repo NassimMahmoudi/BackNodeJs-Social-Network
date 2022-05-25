@@ -8,17 +8,29 @@ module.exports.checkUser = (req, res, next) => {
     jwt.verify(token, process.env.TOKEN_SECRET, async (err, decodedToken) => {
       if (err) {
         res.locals.user = null;
-        // res.cookie("jwt", "", { maxAge: 1 });
-        next();
+        return res.status(401).json({ message : 'You must register to do this' });
       } else {
-        let user = await UserModel.findById(decodedToken.id);
-        res.locals.user = user;
-        next();
+        console.log(decodedToken)
+        if(decodedToken.role != 'User'){
+          res.locals.user = null;
+          return res.status(401).json({ message : 'You must register to do this' });
+        }else{
+          let user = await UserModel.findById(decodedToken.id);
+          if(user){
+            res.locals.user = user;
+            next();
+          }else{
+            return res.status(401).json({ message : 'You must register to do this' });
+          }
+          
+        }
+        
+       
       }
     });
-  } else {
-    res.locals.user = null;
-    next();
+  }else {
+    res.locals.admin = null;
+    return res.status(401).json({ message : 'You must be admin to do this' });
   }
 };
 module.exports.checkAdmin = (req, res, next) => {
@@ -27,17 +39,29 @@ module.exports.checkAdmin = (req, res, next) => {
     jwt.verify(token, process.env.TOKEN_SECRET, async (err, decodedToken) => {
       if (err) {
         res.locals.admin = null;
-        // res.cookie("jwt", "", { maxAge: 1 });
-        next();
+        return res.status(401).json({ message : 'You must be admin to do this' });
       } else {
-        let admin = await AdminModel.findById(decodedToken.id);
-        res.locals.admin = admin;
-        next();
+        console.log(decodedToken)
+        if(decodedToken.role != 'Admin'){
+          res.locals.admin = null;
+          return res.status(401).json({ message : 'You must be admin to do this' });
+        }else{
+          let admin = await AdminModel.findById(decodedToken.id);
+          if(admin){
+            res.locals.admin = admin;
+            next();
+          }else{
+            return res.status(401).json({ message : 'You must be admin to do this' });
+          }
+          
+        }
+        
+       
       }
     });
-  } else {
+  }else {
     res.locals.admin = null;
-    next();
+    return res.status(401).json({ message : 'You must be admin to do this' });
   }
 };
 
@@ -46,13 +70,18 @@ module.exports.requireAuth = (req, res, next) => {
   if (token) {
     jwt.verify(token, process.env.TOKEN_SECRET, async (err, decodedToken) => {
       if (err) {
-        res.status(200).json('no token')
+        return res.status(401).json({ message : 'You must register to do this' });
       } else {
-        console.log(decodedToken.id);
-        next();
-      }
+        if((decodedToken.role != 'Admin') && (decodedToken.role != 'User') ){
+          res.locals.admin = null;
+          return res.status(401).json({ message : 'You must register to do this' });
+        }else{
+          res.locals.admin = null;
+          next();
+        }
+    }
     });
   } else {
-    res.status(200).send('no token')
+    return res.status(401).json({ message : 'You must register to do this' });
   }
 };

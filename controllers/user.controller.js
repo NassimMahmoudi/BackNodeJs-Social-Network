@@ -1,4 +1,5 @@
 const UserModel = require("../models/user.model.js");
+const PostModel = require("../models/post.model.js");
 const ObjectID = require("mongoose").Types.ObjectId;
 var fs =require('fs');
 
@@ -10,13 +11,33 @@ module.exports.SearchUsers = async (req, res) => {
   let name_serached = req.params.name;
   let resultSearch=[];
   const users = await UserModel.find().select("-password");
-  users.forEach(element => {
-    let name=element.pseudo;
-    let position = name.indexOf(name_serached);
-    if(position>-1){
-      resultSearch.push(element);
+  if(users){
+    users.forEach(element => {
+      let name=element.pseudo;
+      let position = name.indexOf(name_serached);
+      if(position>-1){
+        resultSearch.push(element);
+      }
+    });
+  }
+  
+  res.status(200).json(resultSearch);
+};
+module.exports.userHome = async (req, res) => {
+  if (!ObjectID.isValid(req.params.id))
+    return res.status(400).send("ID unknown : " + req.params.id);
+  let resultSearch=[];
+  let posts=[];
+  const user = await UserModel.findById({_id : req.params.id}).select("-password");
+  if(user){
+      for (let element of user.following) {
+      posts = await PostModel.find({posterId : element, is_accepted : true});
+      
+        for (let element of posts) {
+        resultSearch.push(element)
+      }
     }
-  });
+  }
   res.status(200).json(resultSearch);
 };
 

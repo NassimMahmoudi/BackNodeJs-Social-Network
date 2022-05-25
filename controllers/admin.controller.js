@@ -47,7 +47,7 @@ module.exports.uploadProfil = (req, res) => {
   if (!ObjectID.isValid(req.params.id))
     return res.status(400).send("ID unknown : " + req.params.id);
   if(req.file){  
-    new_image=req.file.filename;
+    new_image='/uploads/profils/'+req.file.filename;
   try{
       // Delete old Image from server
       // IN the front side you should pass the new image and the old image too

@@ -8,7 +8,7 @@ const maxAge = 3 * 24 * 60 * 60 * 1000;
 
 module.exports.signUp = async (req, res) => {
   const {pseudo, email, password ,bio} = req.body
-  let picture = req.file.filename;
+  let picture = '/uploads/profils/'+req.file.filename;
   try {
     const user = await UserModel.create({pseudo, email, password, bio, picture });
     res.status(201).json({ user: user._id});

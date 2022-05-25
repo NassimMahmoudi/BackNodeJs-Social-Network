@@ -22,21 +22,23 @@ const corsOptions = {
 app.use(cors(corsOptions));
 // serve all static files inside public directory display images
 app.use(express.static('public')); 
-app.use('/uploads/posts/videos/', express.static("/uploads/posts/videos/"));
+app.use('/uploads/posts/videos/', express.static("uploads/posts/videos/"));
+app.use('/uploads/profils/', express.static("uploads/profils/"));
+app.use('/uploads/posts/', express.static("uploads/posts/"));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 // jwt
-app.get('*', checkUser);
+app.get('*', requireAuth);
 app.get('/jwtid', requireAuth, (req, res) => {
   res.status(200).send(res.locals.user._id)
 });
 
 // routes
 app.use('/api/user',userRoutes);
-app.use('/api/admin', checkAdmin, adminRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/post',postRoutes);
 
 // server

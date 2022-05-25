@@ -36,7 +36,7 @@ const PostSchema = new mongoose.Schema(
       required: true,}, 
     is_accepted: {
       type: Boolean,
-      required: false,},
+      default: false,},
     video: {
       type: String,
     },

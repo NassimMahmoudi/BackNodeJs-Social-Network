@@ -10,6 +10,6 @@ router.post("/register", upload, adminController.signUp);
 router.post("/login", adminController.signIn);
 router.get("/logout",checkAdmin, adminController.logout);
 // upload
-router.patch("/upload/:id", upload, adminController.uploadProfil);    
+router.patch("/upload/:id", [checkAdmin,upload], adminController.uploadProfil);    
 
 module.exports = router;

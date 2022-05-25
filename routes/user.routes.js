@@ -11,21 +11,22 @@ const upload = require("../middleware/uploadProfile.middleware");
 // auth
 router.post("/register", upload, authController.signUp);
 router.post("/login", authController.signIn);
-router.get("/logout", requireAuth,authController.logout);
+router.get("/logout", checkUser,authController.logout);
 
 // user DB
-router.get("/", userController.getAllUsers);
+router.get("/", checkAdmin, userController.getAllUsers);
 //search user
-router.get("/search/:name", userController.SearchUsers);
+router.get("/search/:name",requireAuth, userController.SearchUsers);
 router.get("/:id",requireAuth, userController.userInfo);
 router.put("/:id", requireAuth, userController.updateUser);
-router.put("/accept-user/:id", userController.acceptUser);
-router.delete("/:id",requireAuth, userController.deleteUser);
-router.patch("/follow/:id", userController.follow);
-router.patch("/unfollow/:id", userController.unfollow);
-
+router.put("/accept-user/:id", checkAdmin, userController.acceptUser);
+router.delete("/:id",checkAdmin, userController.deleteUser);
+router.patch("/follow/:id",checkUser, userController.follow);
+router.patch("/unfollow/:id",checkUser, userController.unfollow);
+// Accuiel
+router.get("/home/:id",requireAuth, userController.userHome);
 // upload
-router.patch("/upload/:id", upload, userController.uploadProfil);
+router.patch("/upload/:id", [checkUser,upload], userController.uploadProfil);
 
 
 module.exports = router;

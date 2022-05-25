@@ -282,3 +282,11 @@ module.exports.UploadVideo = (req, res) => {
   });
 
 };
+module.exports.getPost = async (posterid) => {
+  if (!ObjectID.isValid(posterid))
+    return res.status(400).send("ID unknown : " + posterid);
+  await PostModel.findOne({ posterId : posterid, is_accepted : true },(err, docs) => {
+    if (!err) return(docs);
+    else console.log("Error to get data : " + err);
+  });
+};
