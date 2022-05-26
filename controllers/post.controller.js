@@ -261,7 +261,7 @@ module.exports.deleteCommentPost = (req, res) => {
         },
       },
       { new: true })
-            .then((data) => res.send(data))
+            .then((data) => res.send('Deleting success !!'))
             .catch((err) => res.status(500).send({ message: err }));
     } catch (err) {
         return res.status(400).send(err);
